@@ -1,0 +1,14 @@
+{
+    "require": {
+        "slim/slim": "^3.9",
+        "monolog/monolog": "^1.23",
+        "auth0/auth0-php": "^5.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "yavml\\": "classes/yavml",
+            "auth\\": "classes/auth",
+            "cors\\": "classes/cors"
+        }
+    }
+}

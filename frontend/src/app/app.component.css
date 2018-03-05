@@ -1,0 +1,10 @@
+.btn-xs {
+    padding: .2rem .4rem;
+    font-size: .75rem;
+    line-height: 1.25;
+    border-radius: .2rem;
+}
+
+.pointer {
+    cursor: pointer;
+}

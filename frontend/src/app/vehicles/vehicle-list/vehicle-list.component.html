@@ -1,0 +1,22 @@
+<div>
+  <div class="d-flex justify-content-between align-items-center">
+    <span class="h2">Garage</span>
+    <span class="btn-group">
+      <button class="btn btn-xs btn-outline-dark col-md-6" (click)="vehicleService.refreshVehicleList()" title="Refresh list"><i class="fa fa-refresh"></i><span class="sr-only">Refresh</span></button>
+      <a role="button" class="btn btn-xs btn-outline-dark col-md-6" routerLink="/vehicles/new" title="Add vehicle"><i class="fa fa-plus"></i><span class="sr-only">Add Vehicle</span></a>
+    </span>
+  </div>
+  <div *ngIf="vehicleService.vehicles$ | async as vehicles else loading">
+    <div *ngIf="vehicles?.length > 0 else noVehicles" class="nav flex-column nav-pills">
+      <a *ngFor="let vehicle of vehicles" class="nav-item nav-link" [routerLink]="['/vehicles', vehicle.id]" routerLinkActive="active" title="{{vehicle.year}} {{vehicle.make}} {{vehicle.model}}">
+        {{vehicle.name}}<button class="btn btn-xs btn-outline-dark float-right" title="Delete" (click)="deleteVehicle(vehicle);$event.stopPropagation()"><i class="fa fa-trash"></i><span class="sr-only">Delete</span></button>
+      </a>
+    </div>
+    <ng-template #noVehicles class="mb-2">
+      <p>No vehicles in garage</p>
+    </ng-template>
+  </div>
+</div>
+<ng-template #loading  class="col-md-4">
+  <p>Loading garage...</p>
+</ng-template>

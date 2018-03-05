@@ -1,0 +1,12 @@
+<div *ngIf="vehicle; else noneSelected">
+    <h3>{{vehicle.name}}</h3>
+    <ul class="nav nav-tabs" role="tablist">
+      <li class="nav-item"><a class="nav-link" routerLink="fuel" routerLinkActive="active" href="#fuel-log-tab" title="Fuel Log"><i class="fa fa-fire"></i><span> Fuel</span></a></li>
+      <li class="nav-item"><a class="nav-link" routerLink="maintenance" routerLinkActive="active" href="#maintenance-tab" title="Maintenance Log"><i class="fa fa-wrench"></i><span> Maintenance</span></a></li>
+      <li class="nav-item"><a class="nav-link" routerLink="documents" routerLinkActive="active" href="#documents-tab" title="Documents"><i class="fa fa-file"></i><span> Documents</span></a></li>
+      <li class="nav-item"><a class="nav-link" routerLink="edit" routerLinkActive="active" href="#vehicle-editor-tab" title="Edit Vehicle"><i class="fa fa-cog"></i><span> Edit</span></a></li>
+    </ul>
+    <router-outlet></router-outlet>
+  <ng-template #noneSelected>
+    <h3>Loading vehicle details</h3>
+  </ng-template>

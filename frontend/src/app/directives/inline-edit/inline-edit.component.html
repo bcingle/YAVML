@@ -1,0 +1,8 @@
+<div>
+  <div *ngIf="editing">
+    <input #inlineEditControl [required]="required" (blur)="onBlur($event)" [name]="value" [(ngModel)]="value" [type]="type" [placeholder]="label"/>
+  </div>
+  <div *ngIf="!editing" (click)="edit(value)" (focus)="edit(value)">
+    {{value}}
+  </div>
+</div>

@@ -1,0 +1,9 @@
+<ng-template #loading>Loading details...</ng-template>
+<div class="form" *ngIf="vehicle; else loading">
+  <h3>Edit Vehicle</h3>
+  <app-edit-vehicle [(vehicle)]="vehicle"></app-edit-vehicle>
+  <div class="form-row">
+    <button class="btn btn-primary" (click)="save()">Save</button>
+  </div>
+</div>
+

@@ -1,0 +1,12 @@
+.hide-on-unfocus {
+    display: none;
+}
+
+:focus ~ .show-on-focus, :focus .show-on-focus {
+    display: initial;
+}
+
+.input-group-text {
+    min-width: 100px;
+    text-align: left;
+}

@@ -1,0 +1,44 @@
+<!--The content below is only a placeholder and can be replaced.-->
+
+<nav class="navbar navbar-expand-sm navbar-light bg-light">
+    <a class="navbar-brand" href="#">YAVML</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+        aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item" routerLinkActive="active" routerLink="/vehicles">
+                <a class="nav-link" routerLink="/vehicles">Garage</a>
+            </li>
+        </ul>
+        <span class="btn btn-sm">
+            <button class="btn btn-sm btn-secondary" (click)="auth.login()" *ngIf="!auth.isAuthenticated()">Login</button>
+            <button class="btn btn-sm btn-secondary" (click)="auth.logout()" *ngIf="auth.isAuthenticated()">Logout</button>
+        </span>
+    </div>
+
+</nav>
+
+
+<div class="container">
+    <div *ngIf="auth.authChecked$ | async; else waitAuth">
+        <div *ngIf="auth.isAuthenticated(); else login">
+            <router-outlet></router-outlet>
+        </div>
+        <ng-template #login>
+            <app-splash></app-splash>
+        </ng-template>
+    </div>
+    <ng-template #waitAuth>
+        <h3>Authenticating, please wait...</h3>
+    </ng-template>
+</div>
+
+<div class="fixed-bottom text-center bg-danger text-light p-2 pointer" *ngIf="messages.message$ | async; let message" (click)="messages.clear()">
+    {{message}}
+    <span class="float-right">
+        <span class="sr-only">Close</span><span aria-hidden="true">&times;</span>
+    </span>
+</div>

@@ -1,0 +1,14 @@
+<div class="form">
+  <h4>Upload a document</h4>
+  <div class="form-group">
+    <label for="document-title">Title</label>
+    <input id="document-title" class="form-control" type="text" [(ngModel)]="title" placeholder="Document Title" required/>
+  </div>
+  <div class="form-group">
+    <label for="document-file">File</label>
+    <input id="document-file" class="form-control" type="file" accept=".png,.jpg,.pdf" required #fileChooser (change)="fileChange(fileChooser.files)"/>
+  </div>
+  <div class="form-group">
+    <button class="btn btn-primary" (click)="upload()">Upload</button>
+  </div>
+</div>

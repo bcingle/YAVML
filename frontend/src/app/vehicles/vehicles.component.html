@@ -1,0 +1,13 @@
+<div class="row">
+  <div class="col-md-4">
+    <app-vehicle-list></app-vehicle-list>
+  </div>
+  <div class="col-md-8">
+    <router-outlet></router-outlet>
+  </div>
+</div>
+<div *ngIf="working" class="grey-screen d-flex justify-content-center align-items-center">
+
+    <h1><i class="fa fa-spinner spin"></i><span class="sr-only">Loading</span></h1>
+
+</div>

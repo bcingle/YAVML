@@ -1,0 +1,40 @@
+<div *ngIf="documents; else loading">
+  <div *ngIf="documents.length > 0; else noDocs">
+    <h4>Documents</h4>
+    <div class="list-group mb-3">
+      <div *ngFor="let document of documents" class="list-group-item">
+        <div class="row">
+          <div [ngSwitch]="document.filetype" class="col-md-1">
+              <span *ngSwitchCase="'application/pdf'" title="PDF"><i class="fa fa-file-pdf-o"></i><span class="sr-only">PDF</span></span>
+              <span *ngSwitchCase="'image/jpeg'" title="JPEG"><i class="fa fa-file-image-o"></i><span class="sr-only">PDF</span></span>
+              <span *ngSwitchCase="'image/png'" title="{{document.filetype}}"><i class="fa fa-image-o"></i><span class="sr-only">{{document.filetype}}</span></span>
+              <span *ngSwitchDefault><i class="fa fa-file-alt-o"></i><span class="sr-only">Other type</span></span>
+          </div>
+          <div *ngIf="editing !== document" class="col-md-8" (click)="edit(document)">{{document.title}}</div>
+          <div *ngIf="editing === document" class="col-md-8">
+            <div class="input-group">
+              <input #editTitle type="text" [(ngModel)]="document.title" class="form-control" aria-label="New Document Title" (blur)="edit(null)"/>
+              <div class="input-group-append">
+                <button class="btn btn-sm btn-outline-dark" (click)="updateSelected()"><i class="fa fa-save"></i><span class="sr-only">Update</span></button>
+              </div>
+            </div>
+          </div>
+          <div class="btn-group col-md-3">
+            <button class="btn btn-sm btn-outline-dark" title="Edit" (click)="editing = document"><i class="fa fa-gear"></i><span class="sr-only">Edit</span></button>
+            <a role="button" class="btn btn-sm btn-outline-dark" href="{{vehicleService.generateDownloadUrl(document.id)}}" target="_blank" title="Download"><i class="fa fa-download"></i><span class="sr-only">Download</span></a>
+            <button class="btn btn-sm btn-outline-dark" title="Delete" (click)="delete(document)"><i class="fa fa-trash"></i><span class="sr-only">Delete</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a role="button" class="btn btn-primary" routerLink="new">Add document</a>
+</div>
+
+<ng-template #loading>
+  <h5>Loading documents...</h5>
+</ng-template>
+
+<ng-template #noDocs>
+  <h4>You don't have any documents</h4>
+</ng-template>

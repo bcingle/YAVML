@@ -1,0 +1,40 @@
+<div class="form-row">
+  <div class="form-group col-lg-4 col-md-6">
+    <label for="vehicle-name">Name</label>
+    <input id="vehicle-name" class="form-control" type="text" [(ngModel)]="vehicle.name" placeholder="My Truck" required/>
+  </div>
+  <div class="form-group col-lg-3 col-md-6">
+    <label for="vehicle-name">Year</label>
+    <input id="vehicle-year" class="form-control" [(ngModel)]="vehicle.year" type="number" placeholder="2012"/>
+  </div>
+  <div class="form-group col-lg-5 col-md-12">
+    <label for="vehicle-name">VIN</label>
+    <div class="input-group">
+      <input id="vehicle-vin" class="form-control" [(ngModel)]="vehicle.vin" placeholder="2D3GV123456"/>
+      <span class="input-group-append">
+        <button [disabled]="!vehicle.vin || !vehicle.year" title="Enter year and vin first" 
+            class="btn btn-secondary" (click)="decodeVin(vehicle.vin, vehicle.year)">
+          <i class="fa fa-search"></i><span class="sr-only">Search</span>
+        </button>
+      </span>
+    </div>
+  </div>
+</div>
+<div class="form-row">
+  <div class="form-group col-md-3">
+    <label for="vehicle-name">Make</label>
+    <input id="vehicle-make" class="form-control" [(ngModel)]="vehicle.make" placeholder="Ford"/>
+  </div>
+  <div class="form-group col-md-3">
+    <label for="vehicle-name">Model</label>
+    <input id="vehicle-model" class="form-control" [(ngModel)]="vehicle.model" placeholder="F-150"/>
+  </div>
+  <div class="form-group col-md-3">
+    <label for="vehicle-name">Trim</label>
+    <input id="vehicle-trim" class="form-control" [(ngModel)]="vehicle.trim" placeholder="Lariat 5.4L V8"/>
+  </div>
+  <div class="form-group col-md-3">
+    <label for="vehicle-name">Odometer</label>
+    <input id="vehicle-odo" class="form-control col" type="number" [(ngModel)]="vehicle.odometer" placeholder="123456"/>
+  </div>
+</div>
