@@ -21,6 +21,11 @@ return [
             'valid_audiences' => ['omIpUNSfR1NYzV4MXHX3wnCnIQOQ6l5P'],
             'authorized_iss' => ['https://bcingle.auth0.com/']
         ],
+        'cors' => [
+            'allowedOrigins' => [
+                'http://localhost:4200'
+            ]
+        ],
         'uploadDir' => __DIR__ . '/../data'
     ]
 ];

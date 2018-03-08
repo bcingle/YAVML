@@ -4,6 +4,7 @@
 
 
 //$app->add($app->getContainer()->get('auth'));
-$app->add(new \cors\CorsMiddleware);
+
+$app->add(new \cors\CorsMiddleware($app->getContainer()->get('settings')['cors']));
 
 
