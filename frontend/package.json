@@ -23,7 +23,7 @@
     "@angular/router": "^5.1.0",
     "@ng-bootstrap/ng-bootstrap": "^1.0.0",
     "angular2-jwt": "^0.2.3",
-    "auth0-js": "^9.2.0",
+    "auth0-js": "^9.3.0",
     "bootstrap": "^4.0.0",
     "core-js": "^2.4.1",
     "font-awesome": "^4.7.0",
