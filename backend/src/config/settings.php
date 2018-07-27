@@ -26,6 +26,6 @@ return [
                 'http://localhost:4200'
             ]
         ],
-        'uploadDir' => __DIR__ . '/../data'
+        'uploadDir' => __DIR__ . '/../../data'
     ]
 ];

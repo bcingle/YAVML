@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { VehicleService } from '../../vehicle.service';
 import { VehicleSelectorService } from '../vehicle-selector.service';
 import { Location } from '@angular/common';
+import { WaitingService } from '../../waiting.service';
 
 @Component({
   selector: 'app-add-document',
@@ -13,7 +14,10 @@ export class AddDocumentComponent implements OnInit {
   title: string;
   file: File;
 
-  constructor(private vehicleService: VehicleService, private vehicleSelector: VehicleSelectorService, private location: Location) { }
+  constructor(private vehicleService: VehicleService,
+    private vehicleSelector: VehicleSelectorService,
+    private waitingService: WaitingService,
+    private location: Location) { }
 
   ngOnInit() {
   }
@@ -32,8 +36,10 @@ export class AddDocumentComponent implements OnInit {
     console.log(this.file);
     if (this.title && this.file) {
       console.log('Uploading document');
+      this.waitingService.wait();
       this.vehicleService.addVehicleDocument(this.vehicleSelector.getSelectedVehicle(),
         this.title, this.file).subscribe(() => {
+          this.waitingService.doneWaiting();
           this.location.back();
         });
     }

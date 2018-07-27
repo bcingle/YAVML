@@ -29,12 +29,13 @@ class DocumentDAO {
         $query = 'SELECT * FROM DOCUMENT '
             . 'INNER JOIN VEHICLE_DOCUMENT ON VEHICLE_DOCUMENT.DOCUMENT_ID = DOCUMENT.ID '
             . 'INNER JOIN VEHICLE ON VEHICLE.ID = VEHICLE_DOCUMENT.VEHICLE_ID '
-            . 'INNER JOIN USER ON USER.ID = VEHICLE.USER_ID '
-            . 'WHERE DOCUMENT.ID = :docId AND USER.ID = :userId';
+            . 'INNER JOIN USER ON USER.USER_ID = VEHICLE.USER_ID '
+            . 'WHERE DOCUMENT.ID = :docId AND USER.USER_ID = :userId';
         $stmt = $this->pdo->prepare($query);
         $stmt->bindParam(':docId', $docId);
         $stmt->bindParam(':userId', $userId);
-        if ($stmt->execute()) {
+        if ($stmt->execute() && $stmt->columnCount() > 0) {
+            var_dump($row);
             $row = $stmt->fetch();
             return $this->populateDocumentFromRow($row);
         }
@@ -81,12 +82,12 @@ class DocumentDAO {
     }
 
     public function findAllDocumentsByUserAndVehicle(User $user, Vehicle $vehicle) {
-        return $this->findAllDocumentsByUserAndVehicleId($vehicle->id);
+        return $this->findAllDocumentsByUserAndVehicleId($user->id, $vehicle->id);
     }
 
     public function findAllDocumentsByUserAndVehicleId($userId, $vehicleId) {
-        $query = 'SELECT * FROM DOCUMENT ' 
-            . 'INNER JOIN VEHICLE_DOCUMENT ON VEHICLE_DOCUMENT.DOCUMENT_ID = DOCUMENT.ID '
+        $query = 'SELECT d.* FROM DOCUMENT d ' 
+            . 'INNER JOIN VEHICLE_DOCUMENT ON VEHICLE_DOCUMENT.DOCUMENT_ID = d.ID '
             . 'INNER JOIN VEHICLE ON VEHICLE.ID = VEHICLE_DOCUMENT.VEHICLE_ID '
             . 'WHERE VEHICLE_DOCUMENT.VEHICLE_ID = :id AND VEHICLE.USER_ID = :userId';
         $stmt = $this->pdo->prepare($query);
@@ -143,15 +144,20 @@ class DocumentDAO {
     }
 
     public function deleteDocumentByUserAndVehicle($userId, $vehicleId, $documentId) {
+        error_log("User: $userId; Vehicle: $vehicleId; Document: $documentId");
         // a complex SQL query that will delete documents whose ID, Vehicle ID, and User ID
         // match what was passed (mostly just to make sure the user owns the vehicle and document)
-        $query = 'DELETE FROM DOCUMENT '
-            . 'INNER JOIN VEHICLE_DOCUMENT ON VEHICLE_DOCUMENT.DOCUMENT_ID = DOCUMENT.ID '
+        $query = 'DELETE d.* FROM DOCUMENT AS d '
+            . 'INNER JOIN VEHICLE_DOCUMENT ON VEHICLE_DOCUMENT.DOCUMENT_ID = d.ID '
             . 'INNER JOIN VEHICLE ON VEHICLE.ID = VEHICLE_DOCUMENT.VEHICLE_ID '
-            . 'INNER JOIN USER ON USER.ID = VEHICLE.USER_ID '
-            . 'WHERE DOCUMENT.ID = :docId AND VEHICLE.ID = :vehId AND USER.ID = :userId';
+            . 'INNER JOIN USER ON USER.USER_ID = VEHICLE.USER_ID '
+            . 'WHERE d.ID = :docId AND VEHICLE.ID = :vehicleId AND USER.USER_ID = :userId';
+        error_log("Query: $query");
         $stmt = $this->pdo->prepare($query);
-        return $stmt->execute();
+        $stmt->bindParam(':docId', $documentId);
+        $stmt->bindParam(':vehicleId', $vehicleId);
+        $stmt->bindParam(':userId', $userId);
+        return $stmt->execute() && $stmt->rowCount() > 0;
     }
 
     /**

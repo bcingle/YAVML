@@ -21,7 +21,7 @@
           </div>
           <div class="btn-group col-md-3">
             <button class="btn btn-sm btn-outline-dark" title="Edit" (click)="editing = document"><i class="fa fa-gear"></i><span class="sr-only">Edit</span></button>
-            <a role="button" class="btn btn-sm btn-outline-dark" href="{{vehicleService.generateDownloadUrl(document.id)}}" target="_blank" title="Download"><i class="fa fa-download"></i><span class="sr-only">Download</span></a>
+            <button class="btn btn-sm btn-outline-dark" title="Download" (click)="download(document)"><i class="fa fa-download"></i><span class="sr-only">Download</span></button>
             <button class="btn btn-sm btn-outline-dark" title="Delete" (click)="delete(document)"><i class="fa fa-trash"></i><span class="sr-only">Delete</span></button>
           </div>
         </div>

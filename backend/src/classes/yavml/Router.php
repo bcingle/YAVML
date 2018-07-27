@@ -53,9 +53,6 @@ class Router {
         $vehicleId = $args['id'];
         $documentDao = $this->app->get('documentDao');
         $documents = $documentDao->findAllDocumentsByUserAndVehicleId($user->userId, $vehicleId);
-        foreach ($documents as $key => $document) {
-            $documents[$key]->href = "/documents/{$document->href}";
-        }
         return $response->withJson($documents);
     }
 
@@ -66,6 +63,12 @@ class Router {
         $body = $request->getParsedBody();
         if (isset($documents['upload'])) {
             $uploaded = $documents['upload'];
+            $err = static::getUploadErrorMessage($uploaded->getError());
+            if (isset($err)) {
+                // upload error
+                error_log($err);
+                return $response->withStatus(400)->withJson($err);
+            }
             $document = new Document();
             $document->title = $body['title'];
             $document->filetype = $body['filetype'];
@@ -78,10 +81,12 @@ class Router {
                 error_log($document->filename);
                 return $response->withStatus(400);
             }
-            $destination = $this->app->get('settings')['uploadDir'] . `/{$newFilename}`;
+            $uploadDir = $this->app->get('settings')['uploadDir'];
+            $destination = "$uploadDir/$newFilename";
+            error_log("File destination: $destination");
+            $uploaded->moveTo($destination);
             $document = $documentDao->insertDocumentForVehicle($vehicleId, $document);
-            $document->href = "/download/{$document->href}";
-            return $response->withHeader('Location', `/vehicles/{$vehicleId}/documents/{$document->id}`)
+            return $response->withHeader('Location', "/vehicles/$vehicleId/documents/$document->id")
                     ->withJson($document, 201);
         } else {
             error_log('Document upload not provided');
@@ -94,7 +99,7 @@ class Router {
         $vehicleId = $args['vehicleId'];
         $documentId = $args['documentId'];
         $documentDao = $this->app->get('documentDao');
-        if ($documentDao->deleteDocumentByUserAndVehicle($user->id, $vehicleId, $documentId)) {
+        if ($documentDao->deleteDocumentByUserAndVehicle($user->userId, $vehicleId, $documentId)) {
             return $response->withStatus(204);
         } else {
             return $response->withStatus(404);
@@ -104,11 +109,12 @@ class Router {
     public function fetchDocument($user, $request, $response, $args) {
         $documentId = $args['documentId'];
         $documentDao = $this->app->get('documentDao');
-        $document = $documentDao->findVehicleDocumentByUser($user->id, $documentId);
+        $document = $documentDao->findVehicleDocumentByUser($user->userId, $documentId);
         if (!isset($document)) {
             return $response->withStatus(404);
         }
-        $file = $this->app->get('settings')['uploadDir'] . `/{$document->href}`;
+        $uploadDir = $this->app->get('settings')['uploadDir'];
+        $file = "$uploadDir/{$document->href}";
         $fh = fopen($file, 'rb');
         $stream = new \Slim\HTTP\Stream($fh);
         return $response->withHeader('Content-Type', $document->filetype || 'application/octet-stream')
@@ -119,6 +125,20 @@ class Router {
             ->withHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0')
             ->withHeader('Pragma', 'public')
             ->withBody($stream); // all stream contents will be sent to the response
+    }
+
+    private static function getUploadErrorMessage($error) {
+        switch($error) {
+            case UPLOAD_ERR_OK:
+                return null;
+            case UPLOAD_ERR_NO_FILE:
+                return 'No file';
+            case UPLOAD_ERR_INI_SIZE:
+            case UPLOAD_ERR_FORM_SIZE:
+                return 'File too big';
+            default:
+                return 'Unknown error';
+        }
     }
 
 }

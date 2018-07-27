@@ -6,6 +6,7 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 import { AuthService } from '../auth/auth.service';
 import { VehicleSelectorService } from './vehicle-selector.service';
+import { WaitingService } from '../waiting.service';
 
 @Component({
   selector: 'app-vehicles',
@@ -23,18 +24,21 @@ export class VehiclesComponent implements OnInit {
 
   working = false;
 
-  constructor(private vehicleService: VehicleStore, private auth: AuthService) { }
+  constructor(private vehicleService: VehicleStore, private auth: AuthService,
+    private waitingService: WaitingService) { }
 
   ngOnInit() { }
 
 
   deleteVehicle(vehicle: Vehicle): void {
     this.working = true;
+    this.waitingService.wait();
     this.vehicleService.deleteVehicle(vehicle).subscribe(() => {
       if (vehicle === this.selectedVehicle.getValue()) {
         this.selectedVehicle.next(null);
       }
       this.working = false;
+      this.waitingService.doneWaiting();
     });
   }
 
@@ -46,10 +50,12 @@ export class VehiclesComponent implements OnInit {
 
   addVehicle() {
     this.working = true;
+    this.waitingService.wait();
     this.vehicleService.addVehicle(this.newVehicle).subscribe(addedVehicle => {
       this.selectVehicle(addedVehicle);
       this.cancelNewVehicle();
       this.working = false;
+      this.waitingService.doneWaiting();
     });
   }
 
@@ -67,8 +73,10 @@ export class VehiclesComponent implements OnInit {
 
   updateVehicle(vehicle: Vehicle) {
     this.working = true;
+    this.waitingService.wait();
     this.vehicleService.editVehicle(vehicle).subscribe(() => {
       this.working = false;
+      this.waitingService.doneWaiting();
     });
   }
 

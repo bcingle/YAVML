@@ -21,6 +21,7 @@ import { EventEmitter } from '@angular/core';
 import { DoCheck } from '@angular/core';
 import { ISubscription } from 'rxjs/Subscription';
 import { VehicleSelectorService } from '../vehicle-selector.service';
+import { WaitingService } from '../../waiting.service';
 
 @Component({
   selector: 'app-vehicle-editor',
@@ -35,7 +36,10 @@ export class VehicleEditorComponent implements OnInit {
   @Output()
   vehicleChange: EventEmitter<Vehicle> = new EventEmitter();
 
-  constructor(private route: ActivatedRoute, private vehicleStore: VehicleStore, private vehicleSelector: VehicleSelectorService) { }
+  constructor(private route: ActivatedRoute,
+    private vehicleStore: VehicleStore,
+    private vehicleSelector: VehicleSelectorService,
+    private waitingService: WaitingService) { }
 
   ngOnInit() {
     console.log('Vehicle being displayed');
@@ -47,7 +51,9 @@ export class VehicleEditorComponent implements OnInit {
       // get vehicle from route params
       this.route.paramMap.subscribe(paramMap => {
         const id = paramMap.get('id');
+        this.waitingService.wait();
         this.vehicleStore.getVehicle(id).subscribe(vehicle => {
+          this.waitingService.doneWaiting();
           this.vehicle = vehicle;
           this.vehicleSelector.selectVehicle(this.vehicle);
           console.log('Loaded vehicle data');

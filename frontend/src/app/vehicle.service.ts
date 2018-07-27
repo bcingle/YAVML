@@ -74,7 +74,7 @@ export class VehicleService {
   }
 
   deleteDocument(vehicle: Vehicle, documentId) {
-    return this.http.delete(`${this.apiUrl}/${vehicle.id}/documents/${documentId}}`, this.getJsonRequestOptions()).pipe(
+    return this.http.delete(`${this.apiUrl}/${vehicle.id}/documents/${documentId}`, this.getJsonRequestOptions()).pipe(
       catchError(this.handleError('Edit Vehicle Document')),
       share()
     );
@@ -84,11 +84,25 @@ export class VehicleService {
     return `${this.apiUrl}/download/${documentId}`;
   }
 
+  downloadDocument(documentId): Observable<Blob> {
+    return this.http.get(this.generateDownloadUrl(documentId), this.getBlobRequestOptions()).pipe(
+      catchError(this.handleError('Download Document', null)),
+      share()
+    );
+  }
+
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
       console.log(error);
       this.messages.push(`${operation} failed: ${error.message}`);
       throw error;
+    };
+  }
+
+  private getBlobRequestOptions(): {responseType: 'blob', headers: HttpHeaders} {
+    return {
+      headers: this.getGenericRequestOptions().headers,
+      responseType: 'blob'
     };
   }
 

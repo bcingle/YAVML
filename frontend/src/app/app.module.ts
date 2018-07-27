@@ -26,6 +26,8 @@ import { EditVehicleComponent } from './vehicles/edit-vehicle/edit-vehicle.compo
 import { AddDocumentComponent } from './vehicles/add-document/add-document.component';
 import { ListDocumentsComponent } from './vehicles/list-documents/list-documents.component';
 import { InlineEditComponent } from './directives/inline-edit/inline-edit.component';
+import { WaitingSpinnerComponent } from './waiting-spinner/waiting-spinner.component';
+import { WaitingService } from './waiting.service';
 
 
 
@@ -45,7 +47,8 @@ import { InlineEditComponent } from './directives/inline-edit/inline-edit.compon
     EditVehicleComponent,
     AddDocumentComponent,
     ListDocumentsComponent,
-    InlineEditComponent
+    InlineEditComponent,
+    WaitingSpinnerComponent
   ],
   imports: [
     BrowserModule,
@@ -61,7 +64,8 @@ import { InlineEditComponent } from './directives/inline-edit/inline-edit.compon
     NewVehicleService,
     AuthService,
     MessageService,
-    WebStorageService
+    WebStorageService,
+    WaitingService
   ],
   bootstrap: [AppComponent]
 })

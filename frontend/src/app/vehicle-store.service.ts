@@ -8,6 +8,7 @@ import { AuthService } from './auth/auth.service';
 import { Subscription } from 'rxjs/Subscription';
 import { of } from 'rxjs/observable/of';
 import { Subject } from 'rxjs/Subject';
+import { WaitingService } from './waiting.service';
 
 @Injectable()
 export class VehicleStore {
@@ -20,7 +21,8 @@ export class VehicleStore {
   // vehicles$ is a readonly observable that can be subscribed to directly by others
   public readonly vehicles$: Observable<Vehicle[]>;
 
-  constructor(private vehicleService: VehicleService, private auth: AuthService) {
+  constructor(private vehicleService: VehicleService, private auth: AuthService,
+      private waitingService: WaitingService) {
     this._vehicles = new BehaviorSubject(null);
     this.vehicles$ = this._vehicles.asObservable();
     this.initialize();
@@ -40,10 +42,13 @@ export class VehicleStore {
   }
 
   refreshVehicleList(): Observable<Vehicle[]> {
+    this.waitingService.wait();
     this._vehicles.next(null);
     const obs = this.vehicleService.getVehicles();
     obs.subscribe(vehicles => {
+      console.log(vehicles);
       this._vehicles.next(vehicles);
+      this.waitingService.doneWaiting();
     });
     return obs;
   }
@@ -54,12 +59,14 @@ export class VehicleStore {
    */
   addVehicle(vehicle: Vehicle): Observable<Vehicle> {
     // let the background service add the vehicle server-side
+    this.waitingService.wait();
     const observable: Observable<Vehicle> = this.vehicleService.addVehicle(vehicle);
     // when successful, add the vehicle to the store's vehicle list
     observable.subscribe(newVehicle => {
       const vehArr = this._vehicles.getValue();
       vehArr.push(newVehicle);
       this._vehicles.next(vehArr);
+      this.waitingService.doneWaiting();
     });
     // let the caller have access to the result also
     return observable;
@@ -71,6 +78,7 @@ export class VehicleStore {
    */
   deleteVehicle(vehicle: Vehicle): Observable<any> {
     const observable: Observable<any> = this.vehicleService.deleteVehicle(+vehicle.id);
+    this.waitingService.wait();
     observable.subscribe(() => {
       const veh = this._vehicles.getValue();
       const idx = veh.indexOf(vehicle);
@@ -78,6 +86,7 @@ export class VehicleStore {
         veh.splice(idx, 1);
         this._vehicles.next(veh);
       }
+      this.waitingService.doneWaiting();
     });
     return observable;
   }
@@ -88,6 +97,7 @@ export class VehicleStore {
    */
   editVehicle(vehicle: Vehicle): Observable<any> {
     const obs = this.vehicleService.updateVehicle(vehicle);
+    this.waitingService.wait();
     obs.subscribe(() => {
       const veh = this._vehicles.getValue();
       const idx = veh.indexOf(vehicle);
@@ -97,6 +107,7 @@ export class VehicleStore {
         veh.push(vehicle); // add the vehicle if it wasn't already found
       }
       this._vehicles.next(veh);
+      this.waitingService.doneWaiting();
     });
     return obs;
   }
@@ -104,7 +115,9 @@ export class VehicleStore {
   getVehicle(vehicleId): Observable<Vehicle> {
     if (!this._vehicles.getValue()) {
       const vehicleSub: Subject<Vehicle> = new Subject();
+      this.waitingService.wait();
       this.vehicles$.subscribe(vehicles => {
+        this.waitingService.doneWaiting();
         if (vehicles === null) {
           return;
         }
